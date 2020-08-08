@@ -6,6 +6,12 @@ const gameLogic = (activePlayer) => {
     return isWon;
 }
 
+function checkIfDoubleAce(playersScore, currentPlayer) {
+    let winners = [];
+    let res = playersScore[currentPlayer][3].reduce((a, b) => {return (a.code.slice(0,1) + b.code.slice(0,1))});
+    if (res == "AA") winners.push(currentPlayer);
+}
+
 async function getDeck() {
     let res;
     let deck = fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
@@ -25,14 +31,28 @@ async function drawCard(id) {
     return res;
 }
 
-async function didPlayerLose(playersScore, currentPlayer) {
-    playersScore[currentPlayer][1] < 2 ? playersScore[currentPlayer][0] = Number(playersScore[currentPlayer][3][0].value) : await playersScore[currentPlayer][3].reduce((a, b) => {return (Number(a.value) + Number(b.value))});
+function didPlayerLose(playersScore, currentPlayer) {
+
+    const cardValues = {
+        "ACE": 11,
+        "KING": 4,
+        "QUEEN": 3,
+        "JACK": 2
+    };
+    let currentCard = playersScore[currentPlayer][1] - 1;
+    if (isNaN(Number(playersScore[currentPlayer][3][currentCard].value))) {
+        let entries = Object.entries(cardValues);
+        entries.forEach((item) => {if(item[0] == playersScore[currentPlayer][3][currentCard].value) playersScore[currentPlayer][3][currentCard].value = item[1]}); 
+    }
+    playersScore[currentPlayer][1] < 2 ? playersScore[currentPlayer][0] = Number(playersScore[currentPlayer][3][0].value) : playersScore[currentPlayer][0] = playersScore[currentPlayer][3].reduce((a, b) => {return (Number(a.value) + Number(b.value))});
     if(playersScore[currentPlayer][0] > 21) playersScore[currentPlayer][2] = true;
     console.log(playersScore[currentPlayer][0]);
+    if(playersScore[currentPlayer][1] == 2) checkIfDoubleAce(playersScore, currentPlayer);
 }
 
 async function playAsPlayer(deckId, playersScore, currentPlayer) {
     let newCard = await drawCard(deckId);
+    
     playersScore[currentPlayer][1] += 1;
     
     await playersScore[currentPlayer][3].push(newCard.cards[0]);
