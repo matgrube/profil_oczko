@@ -25,8 +25,8 @@ async function drawCard(id) {
     return res;
 }
 
-function didPlayerLose(playersScore, currentPlayer) {
-    playersScore[0] += playersScore[currentPlayer][3].forEach(element => Number(element.value));
+async function didPlayerLose(playersScore, currentPlayer) {
+    playersScore[currentPlayer][1] < 2 ? playersScore[currentPlayer][0] = Number(playersScore[currentPlayer][3][0].value) : await playersScore[currentPlayer][3].reduce((a, b) => {return (Number(a.value) + Number(b.value))});
     if(playersScore[currentPlayer][0] > 21) playersScore[currentPlayer][2] = true;
     console.log(playersScore[currentPlayer][0]);
 }
@@ -34,8 +34,9 @@ function didPlayerLose(playersScore, currentPlayer) {
 async function playAsPlayer(deckId, playersScore, currentPlayer) {
     let newCard = await drawCard(deckId);
     playersScore[currentPlayer][1] += 1;
-    console.log(typeof(playersScore[currentPlayer][3]));
+    
     await playersScore[currentPlayer][3].push(newCard.cards[0]);
+    console.log(typeof(playersScore[currentPlayer][3]));
     console.log(playersScore);
     if (playersScore[currentPlayer][1] == 1) playAsPlayer(deckId, playersScore, currentPlayer);
     didPlayerLose(playersScore, currentPlayer);
