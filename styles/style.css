@@ -4,9 +4,126 @@
     padding: 0;
 }
 
+body {
+    font-family: sans-serif;
+}
+
 .game {
-    margin: 0, auto;
-    max-width: 800px;
-    background-color: green;
+    margin: 0 auto;
+    max-width: 1600px;
+    position: relative;
+    background-color: #109648;
+    height: 100vh;
+    width: 100vw;
+}
+
+.table {
+    margin: auto;
+    height: 80%;
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #4C230A;
+    border: 30px solid #280004;
+}
+
+.table:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.title {
+    margin: 8%;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 2.4rem;
+    color: #fff;
+}
+
+.button_box {
+    margin: auto;
+    width: 50%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.buttons_game {
+    margin: auto;
+    width: 60%;
+    height: 60%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.button_basic {
+    margin: 3% auto;
+    width: 80%;
+    height: 80%;
+    background-color: rgba(255,255,255,0.5);
+    border: 3px solid black;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.button_game {
+    margin: 15% auto;
+    width: 40%;
+    height: 30%;
+    background-color: rgba(255,255,255,0.5);
+    border: 3px solid black;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.player0hand {
+    height: 20%;
+    width: 60%;
+    background-color: #fff;
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player1hand {
+    height: 20%;
+    width: 60%;
+    background-color: #fff;
+    position: absolute;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player2hand {
+    height: 60%;
+    width: 15%;
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 3%;
+    transform: translateY(-50%);
+}
+
+.player3hand {
+    height: 60%;
+    width: 15%;
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    right: 3%;
+    transform: translateY(-50%);
 }
