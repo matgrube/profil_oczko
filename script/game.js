@@ -9,21 +9,11 @@ function firstRound (deckId, playersScore) {
     playersScore.forEach((item, index) => playAsPlayer(deckId, playersScore, index));
 }
 
-
-
 function gameModules(tableElement, playersScore) {
     for(let i = 0; i < playersScore.length; i++) {
         component = moduleMaker('div', `player${i}hand`);
         tableElement.appendChild(component);
     }
-}
-
-const gameLogic = (activePlayer) => {
-    let isWon = false;
-    if (playersScore[activePlayer][0] = 21) {
-        isWon = true;
-    };
-    return isWon;
 }
 
 function checkIfDoubleAce(playersScore, currentPlayer) {
@@ -33,21 +23,19 @@ function checkIfDoubleAce(playersScore, currentPlayer) {
 }
 
 async function getDeck() {
-    let res;
     let deck = fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
     .then(response => response.json())
     .then(data => {return data});
     
-    res = await deck;
+    let res = await deck;
     return res;
 }
 
 async function drawCard(id) {
-    let res;
     let card = fetch(`https://deckofcardsapi.com/api/deck/${id}/draw/?count=1`)
     .then(response => response.json())
     .then(data => {return data});
-    res = await card;
+    let res = await card;
     return res;
 }
 
@@ -64,7 +52,9 @@ function didPlayerLose(playersScore, currentPlayer) {
         let entries = Object.entries(cardValues);
         entries.forEach((item) => {if(item[0] == playersScore[currentPlayer][3][currentCard].value) playersScore[currentPlayer][3][currentCard].value = item[1]}); 
     }
-    playersScore[currentPlayer][1] < 2 ? playersScore[currentPlayer][0] = Number(playersScore[currentPlayer][3][0].value) : playersScore[currentPlayer][0] = playersScore[currentPlayer][3].reduce((a, b) => {return (Number(a.value) + Number(b.value))});
+    
+    playersScore[currentPlayer][0] += Number(playersScore[currentPlayer][3][currentCard].value);
+    
     if(playersScore[currentPlayer][0] > 21) playersScore[currentPlayer][2] = true;
     if(playersScore[currentPlayer][1] == 2) checkIfDoubleAce(playersScore, currentPlayer);
 }
@@ -78,14 +68,30 @@ async function playAsPlayer(deckId, playersScore, currentPlayer) {
 }
 
 function nextPlayer(playersScore, currentPlayer) {
-    currentPlayer == playersScore.length ? currentPlayer = 0 : currentPlayer += 1;
+    return currentPlayer == playersScore.length - 1 ? 0 : currentPlayer += 1;
 }
 
+function showHand(playersScore, currentPlayer) {
+    let hand = document.querySelectorAll(`div.player${currentPlayer}hand`);
+    for(let i = 0; i < playersScore[currentPlayer][1]; i++) {
+        card = moduleMaker('img', 'card');
+        card.src = playersScore[currentPlayer][3][i].image;
+        hand.appendChild(card);
+    };
+}
 
 async function everyNextRound (deckId, playersScore, currentPlayer, activePlayers, buttonHitMe, buttonCheck) {
-    await buttonHitMe.onClick(playAsPlayer(deckId, playersScore, currentPlayer));
-    buttonCheck.onClick(activePlayers[currentPlayer][1] = false);
-    nextPlayer(playersScore, currentPlayer);
+    
+    buttonHitMe.addEventListener("click", () => {
+        if(activePlayers[currentPlayer]) {
+            playAsPlayer(deckId, playersScore, currentPlayer);
+        }
+        currentPlayer = nextPlayer(playersScore, currentPlayer);
+    });
+    buttonCheck.addEventListener("click", () => {
+        activePlayers[currentPlayer] = false;
+        currentPlayer = nextPlayer(playersScore, currentPlayer);
+    });
 }
 
 async function playGame(playersScore, tableElement) {
@@ -107,20 +113,15 @@ async function playGame(playersScore, tableElement) {
     buttonsGame.appendChild(buttonHitMe);
     buttonsGame.appendChild(buttonCheck);
 
-    console.log(playersScore);
-    console.log(activePlayers);
     let deck = await getDeck();
-    console.log(deck.deck_id);
     firstRound(deck.deck_id, playersScore);
-    console.log(playersScore);
 
-    activePlayers[currentPlayer][1] == false ? nextPlayer(playersScore, currentPlayer) : everyNextRound(deck.deck_id, playersScore, currentPlayer, activePlayers, buttonHitMe, buttonCheck);
+    !activePlayers[currentPlayer] ? currentPlayer = nextPlayer(playersScore, currentPlayer) : everyNextRound(deck.deck_id, playersScore, currentPlayer, activePlayers, buttonHitMe, buttonCheck);
+    showHand(playersScore, currentPlayer);
 }
 
 
 (function table () {
-
-    let currentPlayer = 0;
     const playersScore = [[0, 0, false, []]];
     
     const game = document.getElementById("GAME");
@@ -161,7 +162,5 @@ async function playGame(playersScore, tableElement) {
         
         playGame(playersScore, tableElement);
     }
-
-    console.log(playersScore);
 })();
 
